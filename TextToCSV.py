@@ -2,8 +2,8 @@ import csv
 
 # TEMPORARY -- probably should change to use args instead
 # global variables: (change based on input/output files wanted)
-read_file = "_TEST_RTA_3rd_Log.txt"  # .txt
-dest_file = "Test_Acoustic_RTA_Data.csv"  # .csv
+read_file = "_TEST_123_Log.txt"  # .txt
+dest_file = "Test_Acoustic_123_Data.csv"  # .csv
 
 
 def txt_to_csv():
