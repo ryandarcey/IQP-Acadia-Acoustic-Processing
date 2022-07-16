@@ -1,6 +1,9 @@
 import csv
 import sys
 
+read_file = "2022-06-28_SLM_000_123_Log.txt"  # .txt
+dest_file = "Loc1_Acoustic_123_Data.csv"  # .csv
+
 n = len(sys.argv)
 print("Total arguments passed:", n)
 print("\nArguments passed:", end = " ")
@@ -8,14 +11,14 @@ for i in range(1, n):
     print(sys.argv[i], end = " ")
 
 # global variables: (change based on input/output files wanted)
-if n > 1:
-    read_file = sys.argv[1]
-    if n > 2:
-        dest_file = sys.argv[2]
-    else:
-        dest_file = "Test_Acoustic_123_Data.csv"  # .csv
-else:
-    read_file = "_TEST_123_Log.txt"  # .txt
+# if n > 1:
+#     read_file = sys.argv[1]
+#     if n > 2:
+#         dest_file = sys.argv[2]
+#     else:
+#         dest_file = "Loc1_Acoustic_123_Data.csv"  # .csv
+# else:
+#     read_file = "2022-06-28_SLM_000_123_Log.txt"  # .txt
 
 def txt_to_csv():
     # open .txt and .csv files
