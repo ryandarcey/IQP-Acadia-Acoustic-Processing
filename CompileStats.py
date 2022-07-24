@@ -1,7 +1,7 @@
 import csv
 #import array as arr
 
-# global vars (TODO: probably change to args)
+# global vars
 target_csv_1 = "Loc1_Acoustic_123_Data.csv"
 dest_csv = "stats.csv"
 
@@ -22,9 +22,6 @@ def average_db_per_hour():
             current_hour_count = 0
 
             for row in filereader:
-                if filereader.line_num % 2 == 0 or filereader.line_num <= 3:
-                    # TODO: remove once there aren't extra spaces in CSVs
-                    continue
 
                 # do other stuff
                 # grab info
@@ -71,9 +68,6 @@ def db_per_hour_all_days_stats():
                 LAeq_dict[i] = []
 
             for row in filereader:
-                if filereader.line_num % 2 == 0 or filereader.line_num <= 3:
-                    # TODO: remove once there aren't extra spaces in CSVs
-                    continue
 
                 # do other stuff
                 # grab info
