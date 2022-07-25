@@ -1,8 +1,8 @@
 import csv
 
-# global vars -- change as needed
-target_csv = "Loc1_Acoustic_123_Data.csv"
-dest_csv = "stats.csv"
+# global vars -- change in main()
+target_csv = ""
+dest_csv = ""
 
 
 def LAeq_per_30_minutes():
@@ -24,7 +24,7 @@ def LAeq_per_30_minutes():
                 sec_count += 1
 
                 if sec_count > (30 * 60):
-                    filewriter.writerow([(current_30_min_num * 0.25),
+                    filewriter.writerow([(current_30_min_num * 0.5),
                                          (sum(current_30_min_LAeq_list) / len(current_30_min_LAeq_list))])
                     current_30_min_num += 1
                     sec_count = 0
@@ -101,7 +101,7 @@ def compile_all_stats():
         with open(dest_csv, 'w', newline='') as writefile:
             filewriter = csv.writer(writefile)
 
-            filewriter.writerow(["Statistic", "Overall", "Daytime", "Nighttime"])  # column headers
+            filewriter.writerow(["", "Overall", "Daytime", "Nighttime"])  # column headers
 
             # day = [7am, 7pm), night = [7pm, 7am)
             day_LAF_max_list = []
@@ -140,10 +140,14 @@ def compile_all_stats():
             filewriter.writerow(["LAF_max",LAF_max_overall, LAF_max_daytime, LAF_max_nighttime])
 
             LAF_min_overall = (sum(day_LAF_min_list) + sum(night_LAF_min_list)) / (len(day_LAF_min_list) + len(night_LAF_min_list))
-            LAF_min_daytime = (sum(day_LAF_max_list) / len(day_LAF_min_list))
+            LAF_min_daytime = (sum(day_LAF_min_list) / len(day_LAF_min_list))
             LAF_min_nighttime = (sum(night_LAF_min_list) / len(night_LAF_min_list))
             filewriter.writerow(["LAF_min", LAF_min_overall, LAF_min_daytime, LAF_min_nighttime])
 
 
 if __name__ == '__main__':
-    compile_graph_nums()
+    target_csv = "Loc1_Acoustic_123_Data.csv"
+    dest_csv = "stats.csv"
+    LAeq_per_30_minutes()
+    #compile_graph_nums()
+    #compile_all_stats()
