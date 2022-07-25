@@ -1,75 +1,63 @@
 import csv
-#import array as arr
 
-# global vars
-target_csv_1 = "Loc1_Acoustic_123_Data.csv"
+# global vars -- change as needed
+target_csv = "Loc1_Acoustic_123_Data.csv"
 dest_csv = "stats.csv"
 
 
-# calculates the total average Db level for every hour
-# -> each different on the clock, not every 60 minutes/3600 seconds
-def average_db_per_hour():
-    with open(target_csv_1, 'r') as readfile:
+def LAeq_per_30_minutes():
+    with open(target_csv, 'r') as readfile:
         filereader = csv.reader(readfile)
-        with open(dest_csv, 'w') as writefile:
+        with open(dest_csv, 'w', newline='') as writefile:
             filewriter = csv.writer(writefile)
 
-            filewriter.writerow(["Hour Number", "LAeq_dt"])   # column headers
+            filewriter.writerow(["Hour", "LAeq"])  # column headers
 
-            current_hour = -1
-            hour_number = 1
-            current_hour_total = 0
-            current_hour_count = 0
+            current_30_min_num = 0
+            current_30_min_LAeq_list = []
+            sec_count = 0
 
             for row in filereader:
+                if filereader.line_num <= 2:
+                    continue
 
-                # do other stuff
-                # grab info
-                time = row[1].split(":")
-                hour = int(time[0])
-                LAeq_dt = float(row[7])
+                sec_count += 1
 
-                if hour != current_hour:
-                    if current_hour != -1:
-                        # for second hour and on
-                        filewriter.writerow([hour_number, (current_hour_total/current_hour_count)])
-                        current_hour = hour
-                        hour_number += 1
-                        current_hour_total = 0
-                        current_hour_count = 0
-                    else:
-                        current_hour = hour
+                if sec_count > (30 * 60):
+                    filewriter.writerow([(current_30_min_num * 0.25),
+                                         (sum(current_30_min_LAeq_list) / len(current_30_min_LAeq_list))])
+                    current_30_min_num += 1
+                    sec_count = 0
 
-                current_hour_total += LAeq_dt
-                current_hour_count += 1
+                current_30_min_LAeq_list.append(float(row[7]))
 
 
-# gets a few different stats (average LAeq per each of 24 hours,
-# median LAF_min, median LAF_max)
-def db_per_hour_all_days_stats():
-    with open(target_csv_1, 'r') as readfile:
+# TODO: comment stuff lol
+def compile_graph_nums():
+    with open(target_csv, 'r') as readfile:
         filereader = csv.reader(readfile)
-        with open(dest_csv, 'w') as writefile:
+        with open(dest_csv, 'w', newline='') as writefile:
             filewriter = csv.writer(writefile)
 
-            filewriter.writerow(["Hour (0-23)", "LAeq_dt", "LAFmin", "LAFmax"])  # column headers
+            filewriter.writerow(["Hour of the Day", "LAeq", "LAF_max", "LAF_min"])  # column headers
 
-            LAFmax_dict = {}
-            LAFmin_dict = {}
+            LAF_max_dict = {}
+            LAF_min_dict = {}
             LAeq_dict = {}
             current_hour = -1
-            current_LAFmax_list = []
-            current_LAFmin_list = []
+            current_LAF_max_list = []
+            current_LAF_min_list = []
             current_LAeq_list = []
 
             for i in range(0, 24):
-                LAFmax_dict[i] = []
-                LAFmin_dict[i] = []
+                LAF_max_dict[i] = []
+                LAF_min_dict[i] = []
                 LAeq_dict[i] = []
 
             for row in filereader:
+                if filereader.line_num <= 2:
+                    continue
 
-                # do other stuff
                 # grab info
                 time = row[1].split(":")
                 hour = int(time[0])
@@ -77,38 +65,85 @@ def db_per_hour_all_days_stats():
                 if hour != current_hour:
                     if current_hour != -1:
                         size = len(current_LAeq_list)
-                        current_LAFmax_list.sort()
-                        current_LAFmin_list.sort()
-                        current_LAeq_list.sort()
 
-                        #LAFmax_dict[current_hour].append(sum(current_LAFmax_list) / len(current_LAFmax_list))
-                        #LAFmin_dict[current_hour].append(sum(current_LAFmin_list) / len(current_LAFmin_list))
-                        #LAeq_dict[current_hour].append(sum(current_LAeq_list) / len(current_LAeq_list))
-                        LAFmax_dict[current_hour].append(current_LAFmax_list[int(size/2)])
-                        LAFmin_dict[current_hour].append(current_LAFmin_list[int(size / 2)])
-                        LAeq_dict[current_hour].append(current_LAeq_list[int(size / 2)])
+                        for i in range(size):
+                            LAF_max_dict[current_hour].append(current_LAF_max_list[i])
+                            LAF_min_dict[current_hour].append(current_LAF_min_list[i])
+                            LAeq_dict[current_hour].append(current_LAeq_list[i])
 
-                        current_LAFmax_list.clear()
-                        current_LAFmin_list.clear()
+                        current_LAF_max_list.clear()
+                        current_LAF_min_list.clear()
                         current_LAeq_list.clear()
                         current_hour = hour
                     else:
                         current_hour = hour
 
-                current_LAFmax_list.append(float(row[5]))
-                current_LAFmin_list.append(float(row[6]))
+                current_LAF_max_list.append(float(row[5]))
+                current_LAF_min_list.append(float(row[6]))
                 current_LAeq_list.append(float(row[7]))
 
             for i in range(0, 24):
-                max_list = LAFmax_dict[i]
-                min_list = LAFmin_dict[i]
+                max_list = LAF_max_dict[i]
+                min_list = LAF_min_dict[i]
                 avg_list = LAeq_dict[i]
                 filewriter.writerow([i,
-                                    sum(max_list)/len(max_list),
-                                    sum(min_list)/len(min_list),
-                                    sum(avg_list)/len(avg_list)])
+                                     sum(avg_list) / len(avg_list),
+                                     sum(max_list) / len(max_list),
+                                     sum(min_list) / len(min_list)])
+
+
+# computes following stats:
+#   - LAeq, average LAF_max, average LAF_min overall
+#   - same but for daytime vs. nighttime
+def compile_all_stats():
+    with open(target_csv, 'r') as readfile:
+        filereader = csv.reader(readfile)
+        with open(dest_csv, 'w', newline='') as writefile:
+            filewriter = csv.writer(writefile)
+
+            filewriter.writerow(["Statistic", "Overall", "Daytime", "Nighttime"])  # column headers
+
+            # day = [7am, 7pm), night = [7pm, 7am)
+            day_LAF_max_list = []
+            day_LAF_min_list = []
+            day_LAeq_dt_list = []
+            night_LAF_max_list = []
+            night_LAF_min_list = []
+            night_LAeq_dt_list = []
+
+            for row in filereader:
+                if filereader.line_num <= 2:
+                    continue
+
+                # grab info
+                time = row[1].split(":")
+                hour = int(time[0])
+
+                if 7 <= hour < 19:
+                    day_LAF_max_list.append(float(row[5]))
+                    day_LAF_min_list.append(float(row[6]))
+                    day_LAeq_dt_list.append(float(row[7]))
+                else:
+                    night_LAF_max_list.append(float(row[5]))
+                    night_LAF_min_list.append(float(row[6]))
+                    night_LAeq_dt_list.append(float(row[7]))
+
+            # compute and write stats
+            LAeq_overall = (sum(day_LAeq_dt_list) + sum(night_LAeq_dt_list)) / (len(day_LAeq_dt_list) + len(night_LAeq_dt_list))
+            LAeq_daytime = (sum(day_LAeq_dt_list) / len(day_LAeq_dt_list))
+            LAeq_nighttime = (sum(night_LAeq_dt_list) / len(night_LAeq_dt_list))
+            filewriter.writerow(["LAeq", LAeq_overall, LAeq_daytime, LAeq_nighttime])
+
+            LAF_max_overall = (sum(day_LAF_max_list) + sum(night_LAF_max_list)) / (len(day_LAF_max_list) + len(night_LAF_max_list))
+            LAF_max_daytime = (sum(day_LAF_max_list) / len(day_LAF_max_list))
+            LAF_max_nighttime = (sum(night_LAF_max_list) / len(night_LAF_max_list))
+            filewriter.writerow(["LAF_max",LAF_max_overall, LAF_max_daytime, LAF_max_nighttime])
+
+            LAF_min_overall = (sum(day_LAF_min_list) + sum(night_LAF_min_list)) / (len(day_LAF_min_list) + len(night_LAF_min_list))
+            LAF_min_daytime = (sum(day_LAF_max_list) / len(day_LAF_min_list))
+            LAF_min_nighttime = (sum(night_LAF_min_list) / len(night_LAF_min_list))
+            filewriter.writerow(["LAF_min", LAF_min_overall, LAF_min_daytime, LAF_min_nighttime])
 
 
 if __name__ == '__main__':
-    #average_db_per_hour()
-    db_per_hour_all_days_stats()
+    compile_graph_nums()

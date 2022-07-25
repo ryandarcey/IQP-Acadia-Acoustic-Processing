@@ -1,8 +1,8 @@
 import csv
 
 # global vars -- change as needed
-read_file = "Loc2_123_Log.txt"  # .txt
-dest_file = "Loc2_Acoustic_123_Data.csv"  # .csv
+read_file = "Loc1_123_Log.txt"  # .txt
+dest_file = "Loc1_Acoustic_123_Data.csv"  # .csv
 
 
 def txt_to_csv():
