@@ -145,9 +145,11 @@ def compile_all_stats():
             filewriter.writerow(["LAF_min", LAF_min_overall, LAF_min_daytime, LAF_min_nighttime])
 
 
+# change names of CSV files as needed
+# run each method one at a time, then paste them into a master doc for the given location
 if __name__ == '__main__':
-    target_csv = "Loc1_Acoustic_123_Data.csv"
-    dest_csv = "stats.csv"
+    target_csv = "<name>.csv"   # .csv
+    dest_csv = "<name>.csv"     # .csv
     LAeq_per_30_minutes()
     #compile_graph_nums()
     #compile_all_stats()

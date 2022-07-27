@@ -1,8 +1,8 @@
 import csv
 
 # global vars -- change as needed
-read_file = "Loc1_123_Log.txt"  # .txt
-dest_file = "Loc1_Acoustic_123_Data.csv"  # .csv
+read_file = "<name>.txt"  # .txt
+dest_file = "<name>.csv"  # .csv
 
 
 def txt_to_csv():
@@ -13,14 +13,24 @@ def txt_to_csv():
             filewriter = csv.writer(csvfile)
             line_list = txtfile.readlines()
 
+            is_data = False
+
             # iterate through lines to transfer them
             for line in line_list:
                 l = line.strip()
-                l.replace("\n", "")
 
                 data = l.split()
                 for chunk in data:
                     chunk.replace("\t", "")
+
+                if not is_data:
+                    if len(data) > 0 and data[0] == "Date":
+                        is_data = True
+                    elif len(data) > 0 and data[0] == "#CheckSum":
+                        is_data = False
+                    else:
+                        continue
+
                 filewriter.writerow(data)
 
 
