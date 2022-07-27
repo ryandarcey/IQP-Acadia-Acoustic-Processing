@@ -32,7 +32,8 @@ def LAeq_per_30_minutes():
                 current_30_min_LAeq_list.append(float(row[7]))
 
 
-# TODO: comment stuff lol
+# computes overall, daytime, and nighttime averages for
+# LAeq, LAF_max, and LAF_min
 def compile_graph_nums():
     with open(target_csv, 'r') as readfile:
         filereader = csv.reader(readfile)
